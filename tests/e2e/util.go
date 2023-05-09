@@ -6542,20 +6542,20 @@ func getSnapshotHandleFromSupervisorCluster(ctx context.Context,
 	return snapshotId
 }
 
-func getSnapshotHandleFromGuestCluster(ctx context.Context,
-	volumeSnapshotClass *snapc.VolumeSnapshotClass, snapshothandle string, namespace string) string {
-	var snapc *snapclient.Clientset
-	var err error
+// func getSnapshotHandleFromGuestCluster(ctx context.Context,
+// 	volumeSnapshotClass *snapc.VolumeSnapshotClass, snapshothandle string, namespace string) string {
+// 	var snapc *snapclient.Clientset
+// 	var err error
 
-	volumeSnapshot, err := snapc.SnapshotV1().VolumeSnapshots(namespace).Get(ctx, snapshothandle,
-		metav1.GetOptions{})
-	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+// 	volumeSnapshot, err := snapc.SnapshotV1().VolumeSnapshots(namespace).Get(ctx, snapshothandle,
+// 		metav1.GetOptions{})
+// 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
-	snapshotContent, err := snapc.SnapshotV1().VolumeSnapshotContents().Get(ctx,
-		*volumeSnapshot.Status.BoundVolumeSnapshotContentName, metav1.GetOptions{})
-	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+// 	snapshotContent, err := snapc.SnapshotV1().VolumeSnapshotContents().Get(ctx,
+// 		*volumeSnapshot.Status.BoundVolumeSnapshotContentName, metav1.GetOptions{})
+// 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
-	snapshothandle = *snapshotContent.Status.SnapshotHandle
+// 	snapshothandle = *snapshotContent.Status.SnapshotHandle
 
-	return snapshothandle
-}
+// 	return snapshothandle
+// }

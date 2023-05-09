@@ -1163,6 +1163,7 @@ var _ = ginkgo.Describe("[block-vanilla-snapshot] Volume Snapshot Basic Test", f
 			v1.ReadWriteOnce, volumeSnapshot.Name, snapshotapigroup)
 
 		pvclaim2, err := fpv.CreatePVC(client, namespace, pvcSpec)
+		framework.Logf(pvclaim2.Name)
 		gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 		framework.Logf("Verify restored volume %s went to a Bound state", pvclaim2.Name)
