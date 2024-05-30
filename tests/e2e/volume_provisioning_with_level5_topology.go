@@ -83,6 +83,17 @@ var _ = ginkgo.Describe("[topologyL5-positive] TopologyL5-Positive", func() {
 			framework.Failf("Unable to find ready and schedulable Node")
 		}
 		bindingMode = storagev1.VolumeBindingWaitForFirstConsumer
+
+		// read topology map
+		/*
+			here 5 is the actual 5-level topology length (ex - region, zone, building, level, rack)
+			4 represents the 4th level topology length (ex - region, zone, building, level)
+			here rack represents cluster
+			In Topology L5 and L2, we have 3 clusters which we are calling as racks
+			0 represents rack1 or cluster1
+			1 represents rack2 or cluster2
+			2 represents rack3 or cluster3
+		*/
 		topologyLength, leafNode, leafNodeTag0, leafNodeTag1, leafNodeTag2 = 5, 4, 0, 1, 2
 
 		topologyMap := GetAndExpectStringEnvVar(envTopologyMap)
