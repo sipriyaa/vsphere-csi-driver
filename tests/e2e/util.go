@@ -5757,7 +5757,7 @@ func getK8sMasterNodeIPWhereContainerLeaderIsRunning(ctx context.Context,
 		kubeConfigPath = GetAndExpectStringEnvVar(gcKubeConfigPath)
 	} else {
 		// reading k8sMaster1 ip from export variable, if it is empty read it from util
-		k8sMasterIP := GetAndExpectStringEnvVar(envMasterIp1)
+		k8sMasterIP = GetAndExpectStringEnvVar(envMasterIp1)
 		if k8sMasterIP == "" {
 			k8sMasterIPs := getK8sMasterIPs(ctx, client)
 			k8sMasterIP = k8sMasterIPs[0]
@@ -7582,4 +7582,43 @@ func readMultiVcAddress(vcIndex int) (string, string, error) {
 	vcAddress := vCenterIP + ":" + vcPortNo
 
 	return vcAddress, vCenterIP, nil
+}
+
+// GetMasterIpPortMap fetches master IPs and their corresponding SSH ports.
+// It returns a flag indicating if it's a private network and a map of IP-port pairs.
+func GetMasterIpPortMap() (string, bool, map[string]string) {
+
+	sshdPortNum := GetAndExpectStringEnvVar(envMasterIP1SshdPortNum)
+	isPrivateNetwork := true
+	masterIpPortMap := make(map[string]string)
+	if sshdPortNum == "" {
+		isPrivateNetwork = false
+		sshdPortNum = defaultShhdPortNum
+	} else {
+
+		// Retrieve master IPs and their port numbers
+		k8sMasterIp1 := GetAndExpectStringEnvVar(envMasterIp1)
+		k8sMasterIp2 := GetAndExpectStringEnvVar(envMasterIp2)
+		sshdPortNum2 := GetAndExpectStringEnvVar(envMasterIP2SshdPortNum)
+		k8sMasterIp3 := GetAndExpectStringEnvVar(envMasterIp3)
+		sshdPortNum3 := GetAndExpectStringEnvVar(envMasterIP3SshdPortNum)
+
+		// Populate the map
+		masterIpPortMap[k8sMasterIp1] = sshdPortNum
+		masterIpPortMap[k8sMasterIp2] = sshdPortNum2
+		masterIpPortMap[k8sMasterIp3] = sshdPortNum3
+
+	}
+
+	return sshdPortNum, isPrivateNetwork, masterIpPortMap
+}
+
+func GetPortNum(k8sMasterIP string, isPrivateNetwork bool, masterIpPortMap map[string]string) string {
+
+	sshdPortNum := defaultShhdPortNum
+
+	if isPrivateNetwork {
+		sshdPortNum = masterIpPortMap[k8sMasterIP]
+	}
+	return sshdPortNum
 }

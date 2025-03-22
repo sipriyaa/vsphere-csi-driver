@@ -327,6 +327,7 @@ func snapshotOperationWhileServiceDown(serviceName string, namespace string,
 
 	storagePolicyName := GetAndExpectStringEnvVar(envStoragePolicyNameForSharedDatastores)
 	vcAddress, _, err := readVcAddress()
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 	if vanillaCluster {
 		ginkgo.By("Create storage class")
