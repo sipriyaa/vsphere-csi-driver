@@ -280,3 +280,56 @@ func invokeVCRestAPIPatchRequest(vcRestSessionId string, url string, reqBody str
 
 	return resp, statusCode
 }
+
+/*createTestWcpNsWithZones1 creates wcp ns with zones*/
+func createTestWcpNsWithZones1(
+	vcRestSessionId string, storagePolicyId []string,
+	supervisorId string, zoneNames []string) string {
+
+	vcIp := e2eVSphere.Config.Global.VCenterHostname
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+
+	namespace := fmt.Sprintf("csi-vmsvcns-%v", r.Intn(10000))
+	nsCreationUrl := "https://" + vcIp + "/api/vcenter/namespaces/instances/v2"
+
+	// Create a string to represent the zones array
+	var zonesString string
+	for i, zone := range zoneNames {
+		if i > 0 {
+			zonesString += ","
+		}
+		zonesString += fmt.Sprintf(`{"name": "%s"}`, zone)
+	}
+
+	// Create a string to represent the storage policy array as a comma-separated string
+	var policyString string
+	for i, policyId := range storagePolicyId {
+		if i > 0 {
+			policyString += ","
+		}
+		policyString += policyId
+	}
+
+	// Updated request body, ensuring that `policy` is a string or comma-separated list of policies
+	reqBody := fmt.Sprintf(`{
+        "namespace": "%s",
+        "storage_specs": [
+            {
+                "policy": "%s"
+            }
+        ],
+        "supervisor": "%s",
+        "zones": [%s]
+    }`, namespace, policyString, supervisorId, zonesString)
+
+	// Print the request body for debugging
+	fmt.Println(reqBody)
+
+	// Make the API request
+	_, statusCode := invokeVCRestAPIPostRequest(vcRestSessionId, nsCreationUrl, reqBody)
+
+	// Validate the status code
+	gomega.Expect(statusCode).Should(gomega.BeNumerically("==", 204))
+	framework.Logf("Successfully created namespace %v in SVC.", namespace)
+	return namespace
+}
